@@ -16,7 +16,6 @@ def aggregate(
 
     layers = [hidden_states[i][mask].float() for i in SELECTED_LAYERS]
 
-    # Approximate response zone: final 40% of real tokens.
     n_tail = max(8, int(n_real * 0.40))
 
     pooled_features = []
