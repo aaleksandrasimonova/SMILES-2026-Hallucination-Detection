@@ -4,8 +4,8 @@ import torch
 import torch.nn.functional as F
 
 
-SELECTED_LAYERS = [8, 12, 16, 20, 24]
-
+# SELECTED_LAYERS = [8, 12, 16, 20, 24]
+SELECTED_LAYERS = [12, 14, 16, 18, 20]
 
 def aggregate(
     hidden_states: torch.Tensor,
@@ -21,6 +21,7 @@ def aggregate(
 
     pooled_features = []
     geometric_features = []
+    late_means_by_layer = []
 
     for layer in layers:
         tail = layer[-n_tail:]
@@ -33,6 +34,7 @@ def aggregate(
         early_mean = early.mean(dim=0)
         middle_mean = middle.mean(dim=0)
         late_mean = late.mean(dim=0)
+        late_means_by_layer.append(late_mean)
 
         pooled_features.extend([
             middle_mean,
@@ -67,6 +69,15 @@ def aggregate(
 
             torch.norm(late_mean, p=2),
         ])
+
+    for i in range(len(late_means_by_layer) - 1):
+      a = late_means_by_layer[i]
+      b = late_means_by_layer[i + 1]
+
+      geometric_features.extend([
+          F.cosine_similarity(a.unsqueeze(0), b.unsqueeze(0)).squeeze(),
+          torch.norm(b - a, p=2),
+      ])
 
     pooled = torch.cat(pooled_features)
     geom = torch.stack(geometric_features)

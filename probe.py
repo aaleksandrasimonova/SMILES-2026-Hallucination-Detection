@@ -17,30 +17,30 @@ class HallucinationProbe(nn.Module):
     def __init__(self) -> None:
         super().__init__()
 
-        # self.pipeline = Pipeline([
-        #     ("scaler", StandardScaler()),
-        #     ("pca", PCA(n_components=64, random_state=42)),
-        #     ("clf", LogisticRegression(
-        #         C=0.5,
-        #         class_weight="balanced",
-        #         max_iter=5000,
-        #         random_state=42,
-        #     )),
-        # ])
-
         self.pipeline = Pipeline([
             ("scaler", StandardScaler()),
             ("pca", PCA(n_components=64, random_state=42)),
-            ("clf", MLPClassifier(
-                hidden_layer_sizes=(64,),
-                activation="relu",
-                alpha=1e-2,
-                batch_size=32,
-                learning_rate_init=1e-3,
-                max_iter=300,
+            ("clf", LogisticRegression(
+                C=0.5,
+                class_weight="balanced",
+                max_iter=5000,
                 random_state=42,
             )),
         ])
+
+        # self.pipeline = Pipeline([
+        #     ("scaler", StandardScaler()),
+        #     ("pca", PCA(n_components=64, random_state=42)),
+        #     ("clf", MLPClassifier(
+        #         hidden_layer_sizes=(64,),
+        #         activation="relu",
+        #         alpha=1e-2,
+        #         batch_size=32,
+        #         learning_rate_init=1e-3,
+        #         max_iter=300,
+        #         random_state=42,
+        #     )),
+        # ])
 
         self.threshold = 0.5
 
